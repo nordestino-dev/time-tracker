@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { db } from '../config/firebase';
 import { collection, addDoc, query, where, getDocs, orderBy, Timestamp } from 'firebase/firestore';
 import { ClockIcon, PauseIcon, PlayIcon } from '@heroicons/react/24/solid';
+import LoadingSpinner from './LoadingSpinner';
+import ErrorMessage from './ErrorMessage';
 
 type EntryType = 'CLOCK_IN' | 'CLOCK_OUT' | 'BREAK_START' | 'BREAK_END' | 'VACATION' | 'SICK_LEAVE';
 
@@ -16,7 +18,8 @@ interface TimeEntry {
 
 export default function TimeTracker() {
   const { currentUser } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [lastEntry, setLastEntry] = useState<TimeEntry | null>(null);
   const [todayEntries, setTodayEntries] = useState<TimeEntry[]>([]);
 
@@ -29,30 +32,35 @@ export default function TimeTracker() {
   const loadTodayEntries = async () => {
     if (!currentUser) return;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    try {
+      setError('');
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-    const entriesRef = collection(db, 'timeEntries');
-    const q = query(
-      entriesRef,
-      where('userId', '==', currentUser.uid),
-      where('timestamp', '>=', today),
-      orderBy('timestamp', 'desc')
-    );
+      const entriesRef = collection(db, 'timeEntries');
+      const q = query(
+        entriesRef,
+        where('userId', '==', currentUser.uid),
+        where('timestamp', '>=', today),
+        orderBy('timestamp', 'desc')
+      );
 
-    const querySnapshot = await getDocs(q);
-    const entries = querySnapshot.docs.map(doc => ({
-      ...doc.data() as TimeEntry
-    }));
+      const querySnapshot = await getDocs(q);
+      const entries = querySnapshot.docs.map(doc => ({
+        ...doc.data() as TimeEntry
+      }));
 
-    setTodayEntries(entries);
-    setLastEntry(entries[0] || null);
+      setTodayEntries(entries);
+      setLastEntry(entries[0] || null);
+    } catch (error) {
+      setError('Failed to load time entries. Please try again.');
+    }
   };
 
   const recordEntry = async (type: EntryType) => {
     if (!currentUser) return;
 
-    setLoading(true);
+    setIsLoading(true);
     try {
       const entry: Omit<TimeEntry, 'id'> = {
         type,
@@ -64,9 +72,9 @@ export default function TimeTracker() {
       await addDoc(collection(db, 'timeEntries'), entry);
       await loadTodayEntries();
     } catch (error) {
-      console.error('Error recording time entry:', error);
+      setError('Failed to record time entry. Please try again.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -90,7 +98,8 @@ export default function TimeTracker() {
 
   return (
     <div className="max-w-4xl mx-auto p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-6">
+        <ErrorMessage message={error} />
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">Time Tracker</h2>
           <div className="text-gray-600 dark:text-gray-300">
@@ -108,28 +117,40 @@ export default function TimeTracker() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <button
             onClick={() => recordEntry('CLOCK_IN')}
-            disabled={loading || lastEntry?.type === 'CLOCK_IN'}
+            disabled={isLoading || lastEntry?.type === 'CLOCK_IN'}
             className="btn btn-primary flex items-center justify-center space-x-2"
           >
-            <PlayIcon className="w-5 h-5" />
+            {isLoading ? (
+              <LoadingSpinner size="sm" className="mr-2" />
+            ) : (
+              <PlayIcon className="w-5 h-5" />
+            )}
             <span>Clock In</span>
           </button>
 
           <button
             onClick={() => recordEntry('CLOCK_OUT')}
-            disabled={loading || lastEntry?.type === 'CLOCK_OUT'}
+            disabled={isLoading || lastEntry?.type === 'CLOCK_OUT'}
             className="btn btn-secondary flex items-center justify-center space-x-2"
           >
-            <PauseIcon className="w-5 h-5" />
+            {isLoading ? (
+              <LoadingSpinner size="sm" className="mr-2" />
+            ) : (
+              <PauseIcon className="w-5 h-5" />
+            )}
             <span>Clock Out</span>
           </button>
 
           <button
             onClick={() => recordEntry(lastEntry?.type === 'BREAK_START' ? 'BREAK_END' : 'BREAK_START')}
-            disabled={loading}
+            disabled={isLoading}
             className="btn btn-secondary flex items-center justify-center space-x-2"
           >
-            {lastEntry?.type === 'BREAK_START' ? 'End Break' : 'Start Break'}
+            {isLoading ? (
+              <LoadingSpinner size="sm" className="mr-2" />
+            ) : (
+              lastEntry?.type === 'BREAK_START' ? 'End Break' : 'Start Break'
+            )}
           </button>
         </div>
 

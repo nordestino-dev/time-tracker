@@ -3,7 +3,9 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './components/Login';
 import Register from './components/Register';
 import TimeTracker from './components/TimeTracker';
-import Navbar from './components/Navbar';
+import LandingPage from './components/LandingPage';
+import LoadingSpinner from './components/LoadingSpinner';
+import AuthenticatedLayout from './components/AuthenticatedLayout';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { currentUser, loading } = useAuth();
@@ -11,12 +13,17 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
 
-  return currentUser ? <>{children}</> : <Navigate to="/login" />;
+  return currentUser ? <AuthenticatedLayout>{children}</AuthenticatedLayout> : <Navigate to="/login" />;
+}
+
+function HomeRoute() {
+  const { currentUser } = useAuth();
+  return currentUser ? <Navigate to="/dashboard" /> : <LandingPage />;
 }
 
 function App() {
@@ -31,14 +38,11 @@ function App() {
               path="/dashboard"
               element={
                 <PrivateRoute>
-                  <>
-                    <Navbar />
-                    <TimeTracker />
-                  </>
+                  <TimeTracker />
                 </PrivateRoute>
               }
             />
-            <Route path="/" element={<Navigate to="/dashboard" />} />
+            <Route path="/" element={<HomeRoute />} />
           </Routes>
         </div>
       </AuthProvider>
