@@ -12,14 +12,15 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
+    port: 4173,
     host: true,
     open: true,
   },
   preview: {
-    host: true,
+    host: '0.0.0.0',
     port: 4173,
-    allowedHosts: ['r9qsvv-4173.csb.app', 'r9qsvv-5501.csb.app'],
+    strictPort: true,
+    cors: true,
   },
   build: {
     outDir: 'dist',
