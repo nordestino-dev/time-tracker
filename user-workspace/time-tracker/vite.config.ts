@@ -4,7 +4,6 @@ import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/time-tracker/',
   plugins: [react()],
   resolve: {
     alias: {
@@ -12,7 +11,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 4173,
+    port: 3000,
     host: true,
     open: true,
   },
