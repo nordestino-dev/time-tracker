@@ -16,6 +16,11 @@ export default defineConfig({
     host: true,
     open: true,
   },
+  preview: {
+    host: true,
+    port: 4173,
+    allowedHosts: ['r9qsvv-4173.csb.app', 'r9qsvv-5501.csb.app'],
+  },
   build: {
     outDir: 'dist',
     sourcemap: true,
