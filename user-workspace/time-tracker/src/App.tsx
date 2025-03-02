@@ -28,7 +28,7 @@ function HomeRoute() {
 
 function App() {
   return (
-    <Router>
+    <Router basename="/time-tracker">
       <AuthProvider>
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
           <Routes>
