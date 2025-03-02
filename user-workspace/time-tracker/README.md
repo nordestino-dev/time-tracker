@@ -2,6 +2,10 @@
 
 A modern time tracking application built with React, TypeScript, and Firebase. Track work hours, breaks, and time off with an easy-to-use interface.
 
+## Live Demo
+
+[View Live Demo](https://nordestino-dev.github.io/time-tracker) (Coming soon)
+
 ## Features
 
 - User authentication with email/password and Google sign-in
@@ -10,6 +14,8 @@ A modern time tracking application built with React, TypeScript, and Firebase. T
 - Daily activity log
 - Dark mode support
 - Responsive design
+- Real-time updates using Firebase
+- Secure data storage with Firestore
 
 ## Tech Stack
 
@@ -27,7 +33,7 @@ A modern time tracking application built with React, TypeScript, and Firebase. T
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/time-tracker.git
+git clone https://github.com/nordestino-dev/time-tracker.git
 cd time-tracker
 ```
 
@@ -66,8 +72,18 @@ npm run build
 time-tracker/
 ├── src/
 │   ├── components/     # React components
-│   ├── contexts/       # React contexts
+│   │   ├── AuthenticatedLayout.tsx
+│   │   ├── ErrorMessage.tsx
+│   │   ├── LandingPage.tsx
+│   │   ├── LoadingSpinner.tsx
+│   │   ├── Login.tsx
+│   │   ├── Navbar.tsx
+│   │   ├── Register.tsx
+│   │   └── TimeTracker.tsx
+│   ├── contexts/      # React contexts
+│   │   └── AuthContext.tsx
 │   ├── config/        # Configuration files
+│   │   └── firebase.ts
 │   ├── assets/        # Static assets
 │   ├── App.tsx        # Main App component
 │   └── main.tsx       # Entry point
@@ -75,6 +91,25 @@ time-tracker/
 ├── index.html         # HTML template
 └── package.json       # Project dependencies
 ```
+
+## Key Features Explained
+
+### Authentication
+- Secure user authentication using Firebase Auth
+- Support for email/password and Google sign-in
+- Protected routes for authenticated users
+
+### Time Tracking
+- Accurate time tracking with start/stop functionality
+- Break time management
+- Daily and weekly summaries
+- Historical data viewing
+
+### User Interface
+- Clean and intuitive design
+- Dark mode support for comfortable viewing
+- Responsive layout for all devices
+- Real-time updates
 
 ## Contributing
 
@@ -87,3 +122,7 @@ time-tracker/
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contact
+
+Project Link: [https://github.com/nordestino-dev/time-tracker](https://github.com/nordestino-dev/time-tracker)
